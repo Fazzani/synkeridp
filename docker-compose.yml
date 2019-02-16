@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  synkeridpadminui.admin:
+    image: ${DOCKER_REGISTRY-}synkeridpadminuiadmin
+    build:
+      context: .
+      dockerfile: src/SynkerIdpAdminUI.Admin/Dockerfile
+    depends_on:
+      - synkeridpadminui.sts.identity
+
+  synkeridpadminui.sts.identity:
+    image: ${DOCKER_REGISTRY-}synkeridpadminuistsidentity
+    build:
+      context: .
+      dockerfile: src/SynkerIdpAdminUI.STS.Identity/Dockerfile

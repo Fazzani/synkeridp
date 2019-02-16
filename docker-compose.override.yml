@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  synkeridpadminui.admin:
+    container_name: admin
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "9000:80"
+    volumes:
+      - "C:\\Users\\heni.fazzani\\AppData\\Roaming\\Microsoft\\UserSecrets:/root/.microsoft/usersecrets"
+      - ./Log:/app/Log
+    networks:
+      - idp_network
+
+  synkeridpadminui.sts.identity:
+    container_name: idp
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5000:80"
+      - "5001:443"
+    volumes:
+      - "C:\\Users\\heni.fazzani\\AppData\\Roaming\\Microsoft\\UserSecrets:/root/.microsoft/usersecrets"
+      - ./Log:/app/Log
+    networks:
+      - idp_network
+
+networks:
+  idp_network:
+    driver: bridge

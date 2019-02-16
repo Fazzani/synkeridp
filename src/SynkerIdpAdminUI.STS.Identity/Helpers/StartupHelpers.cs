@@ -38,9 +38,7 @@ namespace SynkerIdpAdminUI.STS.Identity.Helpers
                 {
                     var supportedCultures = new[]
                     {
-                        new CultureInfo("ru"),
-                        new CultureInfo("en"),
-                        new CultureInfo("zh")
+                        new CultureInfo("en")
                     };
 
                     opts.DefaultRequestCulture = new RequestCulture("en");

@@ -172,8 +172,6 @@ namespace SynkerIdpAdminUI.Admin.Helpers
                 {
                     var supportedCultures = new[]
                     {
-                        new CultureInfo("ru"),
-                        new CultureInfo("zh"),
                         new CultureInfo("en")
                     };
 
