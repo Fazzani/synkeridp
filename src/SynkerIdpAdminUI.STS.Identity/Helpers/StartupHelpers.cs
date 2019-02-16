@@ -1,25 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Serilog;
-using SynkerIdpAdminUI.STS.Identity.Configuration.Constants;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
-
-namespace SynkerIdpAdminUI.STS.Identity.Helpers
+﻿namespace SynkerIdpAdminUI.STS.Identity.Helpers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Reflection;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.HttpOverrides;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Localization;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Razor;
+    using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+    using Serilog;
+    using SynkerIdpAdminUI.STS.Identity.Configuration.Constants;
+    using ILogger = Microsoft.Extensions.Logging.ILogger;
+
     public static class StartupHelpers
     {
         public static void AddMvcLocalization(this IServiceCollection services)
