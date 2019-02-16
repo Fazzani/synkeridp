@@ -2,6 +2,7 @@ FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
+HEALTHCHECK --interval=3m --timeout=1m CMD curl -f http://localhost/liveness || exit 1
 
 FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src

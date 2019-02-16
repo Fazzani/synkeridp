@@ -62,6 +62,8 @@ namespace SynkerIdpAdminUI.Admin
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.AddLogging(loggerFactory, Configuration);
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+            app.Map("/liveness", lapp => lapp.Run(async ctx => ctx.Response.StatusCode = 200));
 
             if (env.IsDevelopment())
             {

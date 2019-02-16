@@ -36,6 +36,7 @@ namespace SynkerIdpAdminUI.STS.Identity
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContexts<AdminDbContext>(Configuration);
+
             services.AddAuthenticationServices<AdminDbContext, UserIdentity, UserIdentityRole>(Environment, Configuration, Logger);
             services.AddMvcLocalization();
         }
@@ -48,6 +49,8 @@ namespace SynkerIdpAdminUI.STS.Identity
             {
                 app.UseDeveloperExceptionPage();
             }
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+            app.Map("/liveness", lapp => lapp.Run(async ctx => ctx.Response.StatusCode = 200));
 
             app.UseSecurityHeaders();
             app.UseStaticFiles();
