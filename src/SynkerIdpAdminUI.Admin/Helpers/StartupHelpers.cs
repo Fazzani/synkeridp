@@ -223,7 +223,7 @@ namespace SynkerIdpAdminUI.Admin.Helpers
                         options.Authority = adminConfiguration.IdentityServerBaseUrl;
                         options.RequireHttpsMetadata = false;
 
-                        options.ClientId = AuthenticationConsts.OidcClientId;
+                        options.ClientId = adminConfiguration.ClientId;
 
                         options.Scope.Clear();
                         options.Scope.Add(AuthenticationConsts.ScopeOpenId);
