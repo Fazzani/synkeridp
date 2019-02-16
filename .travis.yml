@@ -1,0 +1,35 @@
+language: minimal
+sudo: required
+install: skip
+if: tag =~ ^\d+\.\d+\.\d+$ OR (commit_message =~ ^build OR type = "cron") AND (branch = master)
+matrix:
+  - DOCKER_BUILD=true arch=x64
+services:
+  - docker
+env:
+  - DOCKERFILE_PATH=src/SynkerIdpAdminUI.Admin/Dockerfile PROJECT=adminidp
+  - DOCKERFILE_PATH=src/SynkerIdpAdminUI.STS.Identity/Dockerfile PROJECT=idp
+os:
+  - linux
+#  - osx
+before_install:
+  - chmod +x trigger-build.sh
+script:
+  - export version=${TRAVIS_TAG:-"1.0.$TRAVIS_BUILD_NUMBER"}
+  - docker build -t "synker/${PROJECT}:${version}" -t "synker/${PROJECT}:latest" --build-arg version=$version -f $DOCKERFILE_PATH .
+  - docker login -u=$DOCKER_USER -p=$DOCKER_PASS
+  - docker push "synker/${PROJECT}"
+jobs:
+  include:
+    stage: Trigger deploy Docker stack
+    name: Deploy
+    script:
+      - chmod +x trigger-build.sh
+      - export version=${TRAVIS_TAG:-"1.0.$TRAVIS_BUILD_NUMBER"}
+      - ./trigger-build.sh "Fazzani/synker-docker" $version
+notifications: # set notification options
+  email:
+    recipients:
+      - tunisienheni@gmail.com
+    on_success: change
+    on_failure: change
