@@ -1,9 +1,6 @@
 ﻿namespace SynkerIdpAdminUI.STS.Identity.Helpers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
-    using System.Reflection;
+    using IdentityServer4;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.HttpOverrides;
@@ -17,7 +14,10 @@
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Serilog;
+    using SynkerIdpAdminUI.STS.Identity.Configuration;
     using SynkerIdpAdminUI.STS.Identity.Configuration.Constants;
+    using System.Globalization;
+    using System.Reflection;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     public static class StartupHelpers
@@ -62,6 +62,8 @@
             where TUserIdentity : class where TUserIdentityRole : class
         {
             var connectionString = configuration.GetConnectionString(ConfigurationConsts.AdminConnectionStringKey);
+            var stsAuthConfig = configuration.GetSection(nameof(StsAuthentificationConfiguration));
+
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             services.AddIdentity<TUserIdentity, TUserIdentityRole>()
@@ -72,7 +74,7 @@
             {
                 iis.AuthenticationDisplayName = "Windows";
                 iis.AutomaticAuthentication = false;
-            });
+            }).Configure<StsAuthentificationConfiguration>(stsAuthConfig);
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -94,6 +96,17 @@
 
             builder.AddCustomSigningCredential(configuration, logger);
             builder.AddCustomValidationKey(configuration, logger);
+
+            services.AddAuthentication()
+               .AddGoogle("Google", options =>
+               {
+                   options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                   if (stsAuthConfig is StsAuthentificationConfiguration stsAuthConfiguration)
+                   {
+                       options.ClientId = stsAuthConfiguration.GoogleOptions.ClientId;
+                       options.ClientSecret = stsAuthConfiguration.GoogleOptions.Secret;
+                   }
+               });
         }
 
         public static void AddDbContexts<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext
