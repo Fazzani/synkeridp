@@ -97,16 +97,17 @@
             builder.AddCustomSigningCredential(configuration, logger);
             builder.AddCustomValidationKey(configuration, logger);
 
-            services.AddAuthentication()
-               .AddGoogle("Google", options =>
-               {
-                   options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
-                   if (stsAuthConfig is StsAuthentificationConfiguration stsAuthConfiguration)
+            var authConfig = configuration.GetSection(nameof(StsAuthentificationConfiguration)).Get<StsAuthentificationConfiguration>();
+            if (authConfig.Google != null)
+            {
+                services.AddAuthentication()
+                   .AddGoogle("Google", options =>
                    {
-                       options.ClientId = stsAuthConfiguration.GoogleOptions.ClientId;
-                       options.ClientSecret = stsAuthConfiguration.GoogleOptions.Secret;
-                   }
-               });
+                       options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                       options.ClientId = authConfig.Google.ClientId;
+                       options.ClientSecret = authConfig.Google.Secret;
+                   });
+            }
         }
 
         public static void AddDbContexts<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext
