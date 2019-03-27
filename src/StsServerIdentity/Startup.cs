@@ -124,10 +124,10 @@ namespace StsServerIdentity
                     };
                 });
 
-            IdpConfigure(services, stsConfig, cert);
+            ConfigureIdp(services, stsConfig, cert);
         }
 
-        private void IdpConfigure(IServiceCollection services, IConfigurationSection stsConfig, X509Certificate2 cert)
+        private void ConfigureIdp(IServiceCollection services, IConfigurationSection stsConfig, X509Certificate2 cert)
         {
             services.AddTransient<IProfileService, IdentityWithAdditionalClaimsProfileService>();
             var stsAuthConfig = Configuration.GetSection(nameof(StsAuthentificationConfiguration));
@@ -254,16 +254,15 @@ namespace StsServerIdentity
                 {
                     if (context.Context.Response.Headers["feature-policy"].Count == 0)
                     {
-                        var featurePolicy = "accelerometer 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'";
-
-                        context.Context.Response.Headers["feature-policy"] = featurePolicy;
+                        context.Context.Response.Headers["feature-policy"] = 
+                        "accelerometer 'none'; camera 'none'; geolocation 'none'; gyroscope 'none'; magnetometer 'none'; microphone 'none'; payment 'none'; usb 'none'";
                     }
 
                     if (context.Context.Response.Headers["X-Content-Security-Policy"].Count == 0)
                     {
-                        var csp = "script-src 'self';style-src 'self';img-src 'self' data:;font-src 'self';form-action 'self';frame-ancestors 'self';block-all-mixed-content";
                         // IE
-                        context.Context.Response.Headers["X-Content-Security-Policy"] = csp;
+                        context.Context.Response.Headers["X-Content-Security-Policy"] = 
+                        "script-src 'self';style-src 'self';img-src 'self' data:;font-src 'self';form-action 'self';frame-ancestors 'self';block-all-mixed-content";
                     }
                 }
             });
