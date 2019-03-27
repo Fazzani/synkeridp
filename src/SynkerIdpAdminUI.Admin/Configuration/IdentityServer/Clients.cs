@@ -5,7 +5,6 @@ using SynkerIdpAdminUI.Admin.Configuration.Constants;
 using SynkerIdpAdminUI.Admin.Configuration.Interfaces;
 
 namespace SynkerIdpAdminUI.Admin.Configuration.IdentityServer
-
 {
     public class Clients
     {

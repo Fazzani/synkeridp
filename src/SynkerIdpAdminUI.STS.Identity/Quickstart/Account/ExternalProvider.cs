@@ -11,4 +11,4 @@ namespace SynkerIdpAdminUI.STS.Identity.Quickstart.Account
         public string DisplayName { get; set; }
         public string AuthenticationScheme { get; set; }
     }
-}
+}   

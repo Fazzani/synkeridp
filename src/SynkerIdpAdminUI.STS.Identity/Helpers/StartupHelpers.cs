@@ -24,13 +24,13 @@
     {
         public static void AddMvcLocalization(this IServiceCollection services)
         {
-            services.AddLocalization(opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; });
+            services.AddLocalization(opts => opts.ResourcesPath = ConfigurationConsts.ResourcesPath);
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddViewLocalization(
                     LanguageViewLocationExpanderFormat.Suffix,
-                    opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; })
+                    opts => opts.ResourcesPath = ConfigurationConsts.ResourcesPath)
                 .AddDataAnnotationsLocalization();
 
             services.Configure<RequestLocalizationOptions>(
@@ -98,10 +98,16 @@
             builder.AddCustomValidationKey(configuration, logger);
 
             var authConfig = configuration.GetSection(nameof(StsAuthentificationConfiguration)).Get<StsAuthentificationConfiguration>();
+            var authenticationBuilder = services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "cookie";
+            });
+
+            authenticationBuilder.AddCookie("cookie");
+
             if (authConfig.Google != null)
             {
-                services.AddAuthentication()
-                   .AddGoogle("Google", options =>
+                authenticationBuilder.AddGoogle("Google", options =>
                    {
                        options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                        options.ClientId = authConfig.Google.ClientId;
@@ -122,7 +128,10 @@
             app.UseRequestLocalization(options.Value);
         }
 
-        public static void AddLogging(this IApplicationBuilder app, ILoggerFactory loggerFactory, IConfiguration configuration)
+        public static void AddLogging(
+            this IApplicationBuilder app,
+            ILoggerFactory loggerFactory,
+            IConfiguration configuration)
         {
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)

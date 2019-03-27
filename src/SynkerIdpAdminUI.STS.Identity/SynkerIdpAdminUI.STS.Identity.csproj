@@ -9,6 +9,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
 		<PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.3.0" />
 		<PackageReference Include="IdentityServer4.EntityFramework" Version="2.3.2" />
@@ -16,6 +18,7 @@
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.1" />
 		<PackageReference Include="NWebsec.AspNetCore.Middleware" Version="2.0.0" />
+		<PackageReference Include="Sendgrid" Version="9.10.0" />
 		<PackageReference Include="Serilog.AspNetCore" Version="2.1.1" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="3.0.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="4.0.0" />
