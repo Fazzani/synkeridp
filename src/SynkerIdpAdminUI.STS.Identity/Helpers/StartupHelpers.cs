@@ -7,43 +7,69 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Localization;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Razor;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Serilog;
+    using StsServerIdentity.Resources;
     using SynkerIdpAdminUI.STS.Identity.Configuration;
     using SynkerIdpAdminUI.STS.Identity.Configuration.Constants;
+    using SynkerIdpAdminUI.STS.Identity.Filters;
+    using SynkerIdpAdminUI.STS.Identity.Models.Models;
+    using SynkerIdpAdminUI.STS.Identity.Resources;
+    using SynkerIdpAdminUI.STS.Identity.Services;
+    using System.Collections.Generic;
     using System.Globalization;
     using System.Reflection;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     public static class StartupHelpers
     {
-        public static void AddMvcLocalization(this IServiceCollection services)
+        public static void AddMvcLocalization(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddLocalization(opts => opts.ResourcesPath = ConfigurationConsts.ResourcesPath);
-
-            services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddViewLocalization(
-                    LanguageViewLocationExpanderFormat.Suffix,
-                    opts => opts.ResourcesPath = ConfigurationConsts.ResourcesPath)
-                .AddDataAnnotationsLocalization();
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.AddSingleton<LocService>();
+            services.AddTransient<IEmailSender, EmailSender>();
 
             services.Configure<RequestLocalizationOptions>(
-                opts =>
+                options =>
                 {
-                    var supportedCultures = new[]
+                    var supportedCultures = new List<CultureInfo>
+                        {
+                            new CultureInfo("en-US"),
+                            new CultureInfo("de-CH"),
+                            new CultureInfo("fr-CH"),
+                            new CultureInfo("it-CH")
+                        };
+
+                    options.DefaultRequestCulture = new RequestCulture(culture: "en-US", uiCulture: "en-US");
+                    options.SupportedCultures = supportedCultures;
+                    options.SupportedUICultures = supportedCultures;
+
+                    var providerQuery = new LocalizationQueryProvider
                     {
-                        new CultureInfo("en")
+                        QureyParamterName = "ui_locales"
                     };
 
-                    opts.DefaultRequestCulture = new RequestCulture("en");
-                    opts.SupportedCultures = supportedCultures;
-                    opts.SupportedUICultures = supportedCultures;
+                    options.RequestCultureProviders.Insert(0, providerQuery);
+                });
+
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new SecurityHeadersAttribute());
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+                .AddViewLocalization()
+                .AddDataAnnotationsLocalization(options =>
+                {
+                    options.DataAnnotationLocalizerProvider = (type, factory) =>
+                    {
+                        var assemblyName = new AssemblyName(typeof(SharedResource).GetTypeInfo().Assembly.FullName);
+                        return factory.Create("SharedResource", assemblyName.Name);
+                    };
                 });
         }
 
@@ -68,6 +94,7 @@
 
             services.AddIdentity<TUserIdentity, TUserIdentityRole>()
                 .AddEntityFrameworkStores<TContext>()
+                .AddErrorDescriber<StsIdentityErrorDescriber>()
                 .AddDefaultTokenProviders();
 
             services.Configure<IISOptions>(iis =>
@@ -83,16 +110,16 @@
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
             })
-                .AddAspNetIdentity<TUserIdentity>()
-                .AddConfigurationStore(options =>
-                {
-                    options.ConfigureDbContext = b => b.UseNpgsql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
-                })
-                .AddOperationalStore(options =>
-                {
-                    options.ConfigureDbContext = b => b.UseNpgsql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
-                    options.EnableTokenCleanup = true;
-                });
+              .AddAspNetIdentity<TUserIdentity>()
+              .AddConfigurationStore(options =>
+              {
+                  options.ConfigureDbContext = b => b.UseNpgsql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+              })
+              .AddOperationalStore(options =>
+              {
+                  options.ConfigureDbContext = b => b.UseNpgsql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                  options.EnableTokenCleanup = true;
+              });
 
             builder.AddCustomSigningCredential(configuration, logger);
             builder.AddCustomValidationKey(configuration, logger);
@@ -116,7 +143,8 @@
             }
         }
 
-        public static void AddDbContexts<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext
+        public static void AddDbContexts<TContext>(this IServiceCollection services, IConfiguration configuration) 
+            where TContext : DbContext
         {
             var connectionString = configuration.GetConnectionString(ConfigurationConsts.AdminConnectionStringKey);
             services.AddDbContext<TContext>(options => options.UseNpgsql(connectionString));

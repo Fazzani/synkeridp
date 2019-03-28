@@ -16,6 +16,7 @@ using StsServerIdentity.Resources;
 using StsServerIdentity.Services;
 using StsServerIdentity.Services.Certificate;
 using SynkerIdpAdminUI.STS.Identity.Configuration;
+using SynkerIdpAdminUI.STS.Identity.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

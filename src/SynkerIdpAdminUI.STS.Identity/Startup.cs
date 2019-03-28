@@ -38,7 +38,7 @@ namespace SynkerIdpAdminUI.STS.Identity
             services.AddDbContexts<AdminDbContext>(Configuration);
 
             services.AddAuthenticationServices<AdminDbContext, UserIdentity, UserIdentityRole>(Environment, Configuration, Logger);
-            services.AddMvcLocalization();
+            services.AddMvcLocalization(Configuration);
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
