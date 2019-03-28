@@ -223,6 +223,8 @@ namespace StsServerIdentity
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.Map("/liveness", lapp => lapp.Run(async ctx => ctx.Response.StatusCode = 200));
+
             app.UseHsts(hsts => hsts.MaxAge(365).IncludeSubdomains());
             app.UseXContentTypeOptions();
             app.UseReferrerPolicy(opts => opts.NoReferrer());

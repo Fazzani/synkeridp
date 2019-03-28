@@ -9,6 +9,7 @@ services:
 env:
   - DOCKERFILE_PATH=src/SynkerIdpAdminUI.Admin/Dockerfile PROJECT=adminidp
   - DOCKERFILE_PATH=src/SynkerIdpAdminUI.STS.Identity/Dockerfile PROJECT=idp
+  - DOCKERFILE_PATH=src/StsServerIdentity/Dockerfile PROJECT=stsidp
 os:
   - linux
 #  - osx

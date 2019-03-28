@@ -26,6 +26,11 @@
     "newProfile1": {
       "commandName": "IISExpress",
       "launchBrowser": true
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}"
     }
   }
 }
