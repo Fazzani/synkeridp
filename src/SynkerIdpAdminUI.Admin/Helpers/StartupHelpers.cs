@@ -44,7 +44,8 @@ namespace SynkerIdpAdminUI.Admin.Helpers
             var storeOptions = new ConfigurationStoreOptions();
             services.AddSingleton(storeOptions);
 
-            services.AddDbContext<TContext>(options => options.UseNpgsql(configuration.GetConnectionString(ConfigurationConsts.AdminConnectionStringKey), optionsSql => optionsSql.MigrationsAssembly(migrationsAssembly)));
+            services.AddDbContext<TContext>(options => options.UseNpgsql(configuration.GetConnectionString(ConfigurationConsts.AdminConnectionStringKey), 
+                optionsSql => optionsSql.MigrationsAssembly(migrationsAssembly)));
         }
 
         public static void RegisterDbContextsStaging<TContext>(this IServiceCollection services)

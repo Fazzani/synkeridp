@@ -157,7 +157,9 @@ namespace StsServerIdentity
                    .AddErrorDescriber<StsIdentityErrorDescriber>()
                    .AddDefaultTokenProviders();
 
-                var connectionString = Configuration.GetConnectionString("AdminConnection");
+                var connectionString = Configuration.GetConnectionString("DefaultConnection");
+                services.AddDbContext<ApplicationDbContext>(options =>
+                    options.UseNpgsql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
 
                 builder
                    .AddAspNetIdentity<ApplicationUser>()
