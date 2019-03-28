@@ -1,4 +1,4 @@
-﻿namespace StsServerIdentity.Services
+﻿namespace SynkerIdpAdminUI.STS.Identity.Services
 {
     using System.Threading.Tasks;
     public interface IEmailSender

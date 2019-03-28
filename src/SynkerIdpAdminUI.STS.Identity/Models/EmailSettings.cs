@@ -1,4 +1,4 @@
-﻿namespace SynkerIdpAdminUI.STS.Identity.Models
+﻿namespace SynkerIdpAdminUI.STS.Identity.Models.Models
 {
     public class EmailSettings
     {

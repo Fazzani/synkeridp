@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using SendGrid;
 using SendGrid.Helpers.Mail;
-using StsServerIdentity.Models;
+using SynkerIdpAdminUI.STS.Identity.Models.Models;
 using System.Threading.Tasks;
 
-namespace StsServerIdentity.Services
+namespace SynkerIdpAdminUI.STS.Identity.Services
 {
     public class EmailSender : IEmailSender
     {

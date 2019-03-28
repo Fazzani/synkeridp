@@ -1,25 +1,25 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using IdentityModel;
+using IdentityServer4;
+using IdentityServer4.Extensions;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
-using StsServerIdentity.Models.AccountViewModels;
-using StsServerIdentity.Models;
-using IdentityServer4.Services;
-using IdentityServer4.Stores;
-using IdentityServer4.Models;
-using IdentityModel;
-using IdentityServer4;
-using IdentityServer4.Extensions;
-using System.Globalization;
-using StsServerIdentity.Services;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
+using StsServerIdentity.Models;
+using StsServerIdentity.Models.AccountViewModels;
 using StsServerIdentity.Resources;
+using StsServerIdentity.Services;
+using System;
+using System.Globalization;
+using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace StsServerIdentity.Controllers
 {
@@ -227,7 +227,7 @@ namespace StsServerIdentity.Controllers
                     await _signInManager.SignOutAsync();
                     // await HttpContext.Authentication.SignOutAsync(idp, new AuthenticationProperties { RedirectUri = url });
                 }
-                catch(NotSupportedException)
+                catch (NotSupportedException)
                 {
                 }
             }
@@ -248,7 +248,7 @@ namespace StsServerIdentity.Controllers
                 SignOutIframeUrl = logout?.SignOutIFrameUrl
             };
 
-            await _persistedGrantService.RemoveAllGrantsAsync(subjectId, "angular2client");
+            //await _persistedGrantService.RemoveAllGrantsAsync(subjectId, "angular2client");
 
             return View("LoggedOut", vm);
         }
@@ -273,7 +273,8 @@ namespace StsServerIdentity.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser {
+                var user = new ApplicationUser
+                {
                     UserName = model.Email,
                     Email = model.Email,
                     IsAdmin = false
@@ -283,8 +284,19 @@ namespace StsServerIdentity.Controllers
                 {
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code }, protocol: HttpContext.Request.Scheme);
-                    await _emailSender.SendEmail(model.Email, "Confirm your account",
-                        $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
+
+                    await _emailSender.SendEmailTemplate(
+                  model.Email,
+                  "Confirm your account",
+                  "d-46b66e30d388448d955ec0b73630eb21",
+                  new
+                  {
+                      header = "Activate Account",
+                      text = "Your almost there. To finish activating your account please click the link below.",
+                      c2a_link = $"{callbackUrl}",
+                      c2a_button = "Activate Account"
+                  }
+                 );
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation(3, "User created a new account with password.");
                     return RedirectToLocal(returnUrl);
@@ -434,12 +446,20 @@ namespace StsServerIdentity.Controllers
                 // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=532713
                 // Send an email with this link
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                await _emailSender.SendEmail(
-                   model.Email, 
-                   "Reset Password",
-                   $"Please reset your password by clicking here: {callbackUrl}", 
-                   "Hi Sir");
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code }, protocol: HttpContext.Request.Scheme);
+               
+                await _emailSender.SendEmailTemplate(
+                  model.Email,
+                  "Reset Password",
+                  "d-46b66e30d388448d955ec0b73630eb21",
+                  new
+                  {
+                      header = "Reset Password",
+                      text = "Your almost there. To finish reset your password please click the link below.",
+                      c2a_link = $"{callbackUrl}",
+                      c2a_button = "Reset Password"
+                  }
+                 );
 
                 return View("ForgotPasswordConfirmation");
             }
@@ -550,6 +570,7 @@ namespace StsServerIdentity.Controllers
             var message = "Your security code is: " + code;
             if (model.SelectedProvider == "Email")
             {
+                //TODO: replacing it by sendEmailTemplate
                 await _emailSender.SendEmail(await _userManager.GetEmailAsync(user), "Security Code", message, "Hi Sir");
             }
 
@@ -569,7 +590,7 @@ namespace StsServerIdentity.Controllers
                 return View("Error");
             }
 
-            if(string.IsNullOrEmpty(provider))
+            if (string.IsNullOrEmpty(provider))
             {
                 provider = "Authenticator";
             }
