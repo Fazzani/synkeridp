@@ -14,3 +14,9 @@ services:
     build:
       context: .
       dockerfile: src/SynkerIdpAdminUI.STS.Identity/Dockerfile
+
+  stsidentity:
+    image: ${DOCKER_REGISTRY-}stsidentity
+    build:
+      context: .
+      dockerfile: src/StsServerIdentity/Dockerfile
