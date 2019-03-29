@@ -2,6 +2,7 @@
 using SendGrid;
 using SendGrid.Helpers.Mail;
 using StsServerIdentity.Models;
+using SynkerIdpAdminUI.STS.Identity.Models;
 using System.Threading.Tasks;
 
 namespace StsServerIdentity.Services

@@ -27,7 +27,7 @@ using SynkerIdpAdminUI.STS.Identity.Services;
 namespace SynkerIdpAdminUI.STS.Identity.Controllers.Account
 {
     [SecurityHeaders]
-    [AllowAnonymous]
+    [Authorize]
     public class AccountController : Controller
     {
         private readonly UserManager<UserIdentity> _userManager;
@@ -63,6 +63,29 @@ namespace SynkerIdpAdminUI.STS.Identity.Controllers.Account
             var type = typeof(SharedResource);
             var assemblyName = new AssemblyName(type.GetTypeInfo().Assembly.FullName);
             _sharedLocalizer = factory.Create("SharedResource", assemblyName.Name);
+        }
+
+        // GET: /Account/Login
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(string returnUrl = null)
+        {
+            var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+            if (context?.IdP != null)
+            {
+                // if IdP is passed, then bypass showing the login screen
+                return ExternalLogin(context.IdP, returnUrl);
+            }
+
+            var vm = await BuildLoginViewModelAsync(returnUrl, context);
+
+            if (!vm.EnableLocalLogin && vm.ExternalProviders.Count() == 1)
+            {
+                // only one option for logging in
+                return ExternalLogin(vm.ExternalProviders.First().AuthenticationScheme, returnUrl);
+            }
+
+            return View(vm);
         }
 
         //

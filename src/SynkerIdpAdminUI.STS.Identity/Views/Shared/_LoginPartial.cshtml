@@ -1,11 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using SynkerIdpAdminUI.STS.Identity.Resources
+@using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity
 @inject LocService SharedLocalizer
 
-@inject SignInManager<Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity.UserIdentity> SignInManager
-@inject UserManager<Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity.UserIdentity> UserManager
+@inject SignInManager<UserIdentity> SignInManager
+@inject UserManager<UserIdentity> UserManager
 
-@if (SignInManager.IsSignedIn(User))
+@if (false)
 {
     <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
