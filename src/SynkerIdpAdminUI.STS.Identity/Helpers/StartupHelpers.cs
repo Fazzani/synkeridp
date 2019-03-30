@@ -80,10 +80,15 @@
             app.UseReferrerPolicy(opts => opts.NoReferrer());
             app.UseXXssProtection(options => options.EnabledWithBlockMode());
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions()
+            var optionsFH = new ForwardedHeadersOptions()
             {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+                RequireHeaderSymmetry = false
+            };
+
+            optionsFH.KnownNetworks.Clear();
+            optionsFH.KnownProxies.Clear();
+            app.UseForwardedHeaders(optionsFH);
 
             app.UseXfo(options => options.SameOrigin());
         }
@@ -147,7 +152,7 @@
             }
         }
 
-        public static void AddDbContexts<TContext>(this IServiceCollection services, IConfiguration configuration) 
+        public static void AddDbContexts<TContext>(this IServiceCollection services, IConfiguration configuration)
             where TContext : DbContext
         {
             var connectionString = configuration.GetConnectionString(ConfigurationConsts.AdminConnectionStringKey);
