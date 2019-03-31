@@ -14,9 +14,9 @@ namespace SynkerIdpAdminUI.Admin.Controllers
     [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
     public class HomeController : BaseController
     {
-        private readonly ILogger<ConfigurationController> _logger;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<ConfigurationController> logger) : base(logger)
+        public HomeController(ILogger<HomeController> logger) : base(logger)
         {
             _logger = logger;
         }

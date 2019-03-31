@@ -18,6 +18,7 @@
     "SynkerIdpAdminUI.Admin": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:9000/",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
