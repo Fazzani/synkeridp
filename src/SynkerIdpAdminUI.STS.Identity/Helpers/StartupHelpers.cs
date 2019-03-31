@@ -120,7 +120,7 @@
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-            })
+            }).AddProfileService<SynkerProfileService>()
               .AddAspNetIdentity<TUserIdentity>()
               .AddConfigurationStore(options =>
               {
