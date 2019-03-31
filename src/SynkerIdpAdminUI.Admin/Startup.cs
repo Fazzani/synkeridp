@@ -11,6 +11,7 @@ using SynkerIdpAdminUI.Admin.Configuration.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity;
 using SynkerIdpAdminUI.Admin.Helpers;
+using System.IO;
 
 namespace SynkerIdpAdminUI.Admin
 {
@@ -21,7 +22,7 @@ namespace SynkerIdpAdminUI.Admin
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             var builder = new ConfigurationBuilder()
-                    .SetBasePath(env.ContentRootPath)
+                    .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
                     .AddEnvironmentVariables();

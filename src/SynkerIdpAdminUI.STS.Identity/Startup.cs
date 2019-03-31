@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Skoruba.IdentityServer4.Admin.EntityFramework.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity;
 using SynkerIdpAdminUI.STS.Identity.Helpers;
+using System.IO;
 
 namespace SynkerIdpAdminUI.STS.Identity
 {
@@ -18,7 +19,7 @@ namespace SynkerIdpAdminUI.STS.Identity
         public Startup(IHostingEnvironment environment, ILoggerFactory loggerFactory)
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(environment.ContentRootPath)
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
