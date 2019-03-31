@@ -1,6 +1,7 @@
 ﻿namespace SynkerIdpAdminUI.STS.Identity.Helpers
 {
     using IdentityServer4;
+    using IdentityServer4.Services;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.HttpOverrides;
@@ -33,7 +34,6 @@
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
             services.AddSingleton<LocService>();
             services.AddTransient<IEmailSender, EmailSender>();
-
             services.Configure<RequestLocalizationOptions>(
                 options =>
                 {
@@ -105,6 +105,8 @@
                 .AddEntityFrameworkStores<TContext>()
                 .AddErrorDescriber<StsIdentityErrorDescriber>()
                 .AddDefaultTokenProviders();
+
+            services.AddTransient<IProfileService, SynkerProfileService>();
 
             services.Configure<IISOptions>(iis =>
             {
