@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using Skoruba.IdentityServer4.Admin.EntityFramework.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity;
 using SynkerIdpAdminUI.STS.Identity.Helpers;
@@ -14,7 +15,7 @@ namespace SynkerIdpAdminUI.STS.Identity
     {
         public IConfiguration Configuration { get; }
         public IHostingEnvironment Environment { get; }
-        public ILogger Logger { get; set; }
+        public Microsoft.Extensions.Logging.ILogger Logger { get; set; }
 
         public Startup(IHostingEnvironment environment, ILoggerFactory loggerFactory)
         {
@@ -31,11 +32,14 @@ namespace SynkerIdpAdminUI.STS.Identity
 
             Configuration = builder.Build();
             Environment = environment;
+
             Logger = loggerFactory.CreateLogger<Startup>();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+
             services.AddDbContexts<AdminDbContext>(Configuration);
 
             services.AddAuthenticationServices<AdminDbContext, UserIdentity, UserIdentityRole>(Environment, Configuration, Logger);
@@ -44,7 +48,7 @@ namespace SynkerIdpAdminUI.STS.Identity
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-			app.AddLogging(loggerFactory, Configuration);
+            app.AddLogging(loggerFactory, Configuration);
 
             if (env.IsDevelopment())
             {

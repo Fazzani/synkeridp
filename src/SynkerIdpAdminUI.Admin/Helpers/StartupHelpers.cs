@@ -122,6 +122,8 @@ namespace SynkerIdpAdminUI.Admin.Helpers
 
         public static void AddLogging(this IApplicationBuilder app, ILoggerFactory loggerFactory, IConfigurationRoot configuration)
         {
+            loggerFactory.AddSerilog();
+
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();

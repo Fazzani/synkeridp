@@ -12,12 +12,17 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity;
 using SynkerIdpAdminUI.Admin.Helpers;
 using System.IO;
+using Serilog;
 
 namespace SynkerIdpAdminUI.Admin
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public IConfigurationRoot Configuration { get; }
+        public Microsoft.Extensions.Logging.ILogger Logger { get; set; }
+        public IHostingEnvironment HostingEnvironment { get; }
+
+        public Startup(IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
@@ -35,11 +40,9 @@ namespace SynkerIdpAdminUI.Admin
             Configuration = builder.Build();
 
             HostingEnvironment = env;
+
+            Logger = loggerFactory.CreateLogger<Startup>();
         }
-
-        public IConfigurationRoot Configuration { get; }
-
-        public IHostingEnvironment HostingEnvironment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -63,6 +66,7 @@ namespace SynkerIdpAdminUI.Admin
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             app.AddLogging(loggerFactory, Configuration);
+
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
             app.Map("/liveness", lapp => lapp.Run(async ctx => ctx.Response.StatusCode = 200));
 

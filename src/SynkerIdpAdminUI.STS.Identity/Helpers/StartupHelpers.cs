@@ -170,6 +170,7 @@
             ILoggerFactory loggerFactory,
             IConfiguration configuration)
         {
+            loggerFactory.AddSerilog();
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
