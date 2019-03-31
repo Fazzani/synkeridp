@@ -120,8 +120,7 @@
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
-            }).AddProfileService<SynkerProfileService>()
-              .AddAspNetIdentity<TUserIdentity>()
+            }).AddAspNetIdentity<TUserIdentity>()
               .AddConfigurationStore(options =>
               {
                   options.ConfigureDbContext = b => b.UseNpgsql(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
@@ -134,6 +133,7 @@
 
             builder.AddCustomSigningCredential(configuration, logger);
             builder.AddCustomValidationKey(configuration, logger);
+            builder.AddProfileService<SynkerProfileService>();
 
             var authConfig = configuration.GetSection(nameof(StsAuthentificationConfiguration)).Get<StsAuthentificationConfiguration>();
             var authenticationBuilder = services.AddAuthentication(options =>

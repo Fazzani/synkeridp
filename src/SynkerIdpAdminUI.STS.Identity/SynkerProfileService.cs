@@ -27,10 +27,10 @@
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             Log.Information("In GetProfileDataAsync");
+
             var sub = context.Subject.GetSubjectId();
             var user = await _userManager.FindByIdAsync(sub);
             var principal = await _claimsFactory.CreateAsync(user);
-
             var claims = principal.Claims.ToList();
 
             claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
@@ -38,7 +38,8 @@
             claims.Add(new Claim(JwtClaimTypes.GivenName, user.UserName));
             claims.Add(new Claim(IdentityServerConstants.StandardScopes.Email, user.Email));
             claims.Add(new Claim("email_hash", user.Email.GetHashCode().ToString()));
-            context.IssuedClaims.AddRange(claims);
+
+            context.IssuedClaims = claims;
         }
 
         public async Task IsActiveAsync(IsActiveContext context)
