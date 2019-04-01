@@ -6,6 +6,7 @@
     using IdentityServer4.Models;
     using IdentityServer4.Services;
     using Microsoft.AspNetCore.Identity;
+    using NETCore.Encrypt;
     using Serilog;
     using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity;
     using System;
@@ -35,7 +36,7 @@
 
             claims.Add(new Claim(JwtClaimTypes.GivenName, user.UserName));
             claims.Add(new Claim(IdentityServerConstants.StandardScopes.Email, user.Email));
-            claims.Add(new Claim("email_hash", user.Email.GetHashCode().ToString()));
+            claims.Add(new Claim("email_hash", EncryptProvider.Md5(user.Email)));
 
             context.IssuedClaims = claims;
         }
