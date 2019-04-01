@@ -26,8 +26,6 @@
 
         public async Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
-            Log.Information("In GetProfileDataAsync");
-
             var sub = context.Subject.GetSubjectId();
             var user = await _userManager.FindByIdAsync(sub);
             var principal = await _claimsFactory.CreateAsync(user);
