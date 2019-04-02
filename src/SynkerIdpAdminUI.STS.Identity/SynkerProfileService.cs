@@ -7,7 +7,6 @@
     using IdentityServer4.Services;
     using Microsoft.AspNetCore.Identity;
     using NETCore.Encrypt;
-    using Serilog;
     using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Entities.Identity;
     using System;
     using System.Linq;
@@ -19,7 +18,7 @@
         private readonly IUserClaimsPrincipalFactory<UserIdentity> _claimsFactory;
         private readonly UserManager<UserIdentity> _userManager;
 
-        public SynkerProfileService(            UserManager<UserIdentity> userManager, IUserClaimsPrincipalFactory<UserIdentity> claimsFactory)
+        public SynkerProfileService(UserManager<UserIdentity> userManager, IUserClaimsPrincipalFactory<UserIdentity> claimsFactory)
         {
             _userManager = userManager;
             _claimsFactory = claimsFactory;
