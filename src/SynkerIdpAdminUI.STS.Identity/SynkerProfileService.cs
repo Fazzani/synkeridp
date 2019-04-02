@@ -19,7 +19,7 @@
         private readonly IUserClaimsPrincipalFactory<UserIdentity> _claimsFactory;
         private readonly UserManager<UserIdentity> _userManager;
 
-        public SynkerProfileService(UserManager<UserIdentity> userManager, IUserClaimsPrincipalFactory<UserIdentity> claimsFactory)
+        public SynkerProfileService(            UserManager<UserIdentity> userManager, IUserClaimsPrincipalFactory<UserIdentity> claimsFactory)
         {
             _userManager = userManager;
             _claimsFactory = claimsFactory;
@@ -34,9 +34,12 @@
 
             claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
 
-            claims.Add(new Claim(JwtClaimTypes.GivenName, user.UserName));
+            claims.Add(new Claim(JwtClaimTypes.PreferredUserName, user.UserName));
             claims.Add(new Claim(IdentityServerConstants.StandardScopes.Email, user.Email));
             claims.Add(new Claim("email_hash", EncryptProvider.Md5(user.Email)));
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            claims.AddRange(userRoles.Select(r => new Claim(JwtClaimTypes.Role, r)));
 
             context.IssuedClaims = claims;
         }
