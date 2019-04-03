@@ -1,7 +1,7 @@
 ﻿namespace SynkerIdpAdminUI.STS.Identity.Helpers
 {
-    using IdentityServer4;
     using IdentityServer4.Services;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.HttpOverrides;
@@ -13,6 +13,7 @@
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Newtonsoft.Json.Linq;
     using Serilog;
     using StsServerIdentity.Resources;
     using SynkerIdpAdminUI.STS.Identity.Configuration;
@@ -21,9 +22,11 @@
     using SynkerIdpAdminUI.STS.Identity.Models.Models;
     using SynkerIdpAdminUI.STS.Identity.Resources;
     using SynkerIdpAdminUI.STS.Identity.Services;
+    using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Reflection;
+    using System.Security.Claims;
     using ILogger = Microsoft.Extensions.Logging.ILogger;
 
     public static class StartupHelpers
@@ -147,9 +150,24 @@
             {
                 authenticationBuilder.AddGoogle("Google", options =>
                    {
-                       options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+                       //options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
                        options.ClientId = authConfig.Google.ClientId;
                        options.ClientSecret = authConfig.Google.Secret;
+
+                       options.Scope.Add("profile");
+
+                       //options.ClaimActions.Clear();
+                       options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+                       options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+                       options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_Name");
+                       options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_Name");
+                       options.ClaimActions.MapJsonKey("picture", "picture");
+                       options.ClaimActions.MapJsonKey(ClaimTypes.Locality, "locale");
+                       options.ClaimActions.MapJsonKey("profile", "urn:google:profile");
+                       options.ClaimActions.MapCustomJson("gender", jobject =>
+                       jobject["gender"].Value<string>().Equals("male", StringComparison.InvariantCultureIgnoreCase) ? "Mr" : "Mrs");
+
+                       options.SaveTokens = true;
                    });
             }
         }

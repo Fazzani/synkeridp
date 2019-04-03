@@ -1,10 +1,4 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using IdentityModel;
+﻿using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
@@ -23,6 +17,12 @@ using SynkerIdpAdminUI.STS.Identity.Controllers.Home;
 using SynkerIdpAdminUI.STS.Identity.Filters;
 using SynkerIdpAdminUI.STS.Identity.Models.Account;
 using SynkerIdpAdminUI.STS.Identity.Services;
+using System;
+using System.Globalization;
+using System.Linq;
+using System.Reflection;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SynkerIdpAdminUI.STS.Identity.Controllers.Account
 {
@@ -283,7 +283,7 @@ namespace SynkerIdpAdminUI.STS.Identity.Controllers.Account
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    
+
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -349,7 +349,16 @@ namespace SynkerIdpAdminUI.STS.Identity.Controllers.Account
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
             if (result.Succeeded)
             {
-                _logger.LogInformation(5, "User logged in with {Name} provider.", info.LoginProvider);
+                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+
+                var props = new AuthenticationProperties();
+                props.StoreTokens(info.AuthenticationTokens);
+
+                await _signInManager.SignInAsync(user, props, info.LoginProvider);
+
+                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.",
+                    info.Principal.Identity.Name, info.LoginProvider);
+
                 return RedirectToLocal(returnUrl);
             }
             if (result.RequiresTwoFactor)
@@ -385,18 +394,33 @@ namespace SynkerIdpAdminUI.STS.Identity.Controllers.Account
                 {
                     return View("ExternalLoginFailure");
                 }
+                var localUser = await _userManager.FindByEmailAsync(model.Email);
                 var user = new UserIdentity { UserName = model.Email, Email = model.Email };
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
+
+              
+                IdentityResult result = null;
+                if (localUser == null)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
+                    result = await _userManager.CreateAsync(user);
+                    user = await _userManager.FindByEmailAsync(model.Email);
+                    result = await _userManager.AddClaimsAsync(user, info.Principal.Claims);
+
                     if (result.Succeeded)
                     {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        _logger.LogInformation(6, "User created an account using {Name} provider.", info.LoginProvider);
-                        return RedirectToLocal(returnUrl);
+                        result = await _userManager.AddLoginAsync(user, info);
                     }
                 }
+                else
+                {
+                    result = await _userManager.AddLoginAsync(user, info);
+                }
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(localUser ?? user, isPersistent: false);
+                    _logger.LogInformation(6, "User created an account using {Name} provider.", info?.LoginProvider);
+                    return RedirectToLocal(returnUrl);
+                }
+
                 AddErrors(result);
             }
 
