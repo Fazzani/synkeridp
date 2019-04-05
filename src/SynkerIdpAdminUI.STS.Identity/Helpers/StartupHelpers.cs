@@ -1,5 +1,6 @@
 ﻿namespace SynkerIdpAdminUI.STS.Identity.Helpers
 {
+    using IdentityModel;
     using IdentityServer4.Services;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Builder;
@@ -157,15 +158,18 @@
                        options.Scope.Add("profile");
 
                        //options.ClaimActions.Clear();
-                       options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "sub");
+                       //options.ClaimActions.MapJsonKey(JwtClaimTypes.Subject, "id");
                        options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
                        options.ClaimActions.MapJsonKey(ClaimTypes.GivenName, "given_Name");
                        options.ClaimActions.MapJsonKey(ClaimTypes.Surname, "family_Name");
-                       options.ClaimActions.MapJsonKey("picture", "picture");
+                       options.ClaimActions.MapJsonKey(JwtClaimTypes.Picture, "picture");
                        options.ClaimActions.MapJsonKey(ClaimTypes.Locality, "locale");
-                       options.ClaimActions.MapJsonKey("profile", "urn:google:profile");
-                       options.ClaimActions.MapCustomJson("gender", jobject =>
-                       jobject["gender"].Value<string>().Equals("male", StringComparison.InvariantCultureIgnoreCase) ? "Mr" : "Mrs");
+                       options.ClaimActions.MapJsonKey(JwtClaimTypes.Profile, "urn:google:profile");
+                       options.ClaimActions.MapCustomJson(JwtClaimTypes.Gender, jobject =>
+                          jobject.TryGetValue("gender", StringComparison.InvariantCultureIgnoreCase, out JToken gender)
+                               ? gender.Value<string>().Equals("male", StringComparison.InvariantCultureIgnoreCase) ? "Mr" : "Mrs"
+                               : string.Empty
+                           );
 
                        options.SaveTokens = true;
                    });

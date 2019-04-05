@@ -34,7 +34,7 @@
             claims = claims.Where(claim => context.RequestedClaimTypes.Contains(claim.Type)).ToList();
 
             claims.Add(new Claim(JwtClaimTypes.PreferredUserName, user.UserName));
-            claims.Add(new Claim(IdentityServerConstants.StandardScopes.Email, user.Email));
+            //claims.Add(new Claim(IdentityServerConstants.StandardScopes.Email, user.Email));
             claims.Add(new Claim("email_hash", EncryptProvider.Md5(user.Email)));
 
             var userRoles = await _userManager.GetRolesAsync(user);

@@ -16,6 +16,7 @@ namespace SynkerIdpAdminUI.STS.Identity
         public IConfiguration Configuration { get; }
         public IHostingEnvironment Environment { get; }
         public Microsoft.Extensions.Logging.ILogger Logger { get; set; }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public Startup(IHostingEnvironment environment, ILoggerFactory loggerFactory)
         {
@@ -42,6 +43,20 @@ namespace SynkerIdpAdminUI.STS.Identity
 
             services.AddDbContexts<AdminDbContext>(Configuration);
 
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy(MyAllowSpecificOrigins,
+            //    builder =>
+            //    {
+            //        builder.WithOrigins("http://synker.ovh",
+            //                            "http://localhost:56810",
+            //                            "https://synker.ovh")
+            //               .AllowAnyHeader()
+            //               .AllowCredentials()
+            //               .AllowAnyMethod();
+            //    });
+            //});
+
             services.AddAuthenticationServices<AdminDbContext, UserIdentity, UserIdentityRole>(Environment, Configuration, Logger);
             services.AddMvcLocalization(Configuration);
         }
@@ -63,6 +78,8 @@ namespace SynkerIdpAdminUI.STS.Identity
             app.Map("/liveness", lapp => lapp.Run(async ctx => ctx.Response.StatusCode = 200));
 
             app.UseSecurityHeaders();
+
+            //app.UseCors(MyAllowSpecificOrigins);
 
             app.UseStaticFiles(new StaticFileOptions()
             {
